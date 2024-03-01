@@ -13,9 +13,9 @@ class UserViewSet(Resource):
     """
     def get(self):
         users = [
-            {"name": "admin", "email": "admin.qq.com"},
-            {"name": "god", "email": "god.qq.com"},
-            {"name": "girl", "email": "girl.qq.com"},
-            {"name": "boy", "email": "boy.qq.com"},
+            {"key": 1, "name": "丁先生", "age": 23, "address": "北京市"},
+            {"key": 2, "name": "王女士", "age": 22, "address": "天津市"},
+            {"key": 3, "name": "胡先生", "age": 21, "address": "重庆市"},
+            {"key": 4, "name": "李先生", "age": 20, "address": "上海市"},
         ]
         return get_return_data(Success, users)
