@@ -26,7 +26,8 @@ class BaseConfig:
     CORS_RESOURCES = {r"/api/*": {"origins": "*"}}
     CSRF_ENABLED = True
     # 运行环境
-    ENV = os.getenv('ENVIRONMENT', 'testing')
+    ENV = os.getenv('ENVIRONMENT', 'development')
+    FLASK_APP = os.getenv('FLASK_APP', 'manage')
 
     # ------------------------------
     # 服务器配置
@@ -90,7 +91,7 @@ class BaseConfig:
     MYSQL_PORT = int(os.getenv("MYSQL_PORT", 3306))
     MYSQL_USER = os.getenv("MYSQL_USER", "root")
     MYSQL_PASSWORD = os.getenv("MYSQL_PASSWORD", "123456")
-    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", 'skeleton_example')
+    MYSQL_DATABASE = os.getenv("MYSQL_DATABASE", 'permission_management')
     MYSQL_URI = 'mysql+pymysql://{}:{}@{}:{}/{}'.format(MYSQL_USER, MYSQL_PASSWORD, MYSQL_HOST, MYSQL_PORT,
                                                         MYSQL_DATABASE)
 

@@ -10,7 +10,7 @@ from werkzeug.utils import import_string
 
 from common.log_handler import LogHandler
 from common.utils import get_ip_address
-from common.extensions import db, main_app_create_engine, migrate
+from common.extensions import db, main_app_create_engine, migrate, celery
 from conf.default import config, BaseConfig
 from conf import celeryconfig
 from .api import VERSIONS_ALLOWED, API_VERSION_MAPPING, APP_BLUEPRINTS
@@ -73,12 +73,11 @@ def create_db():
     # db.close()
 
 
-def create_app(config_name):
+def create_app():
     """应用工厂方法
-
-    :param config_name:
     :return: flask_app
     """
+    config_name = os.getenv('ENVIRONMENT', BaseConfig.ENV)
     app = Flask(__name__)
     app.config.from_object(config[config_name])
 
@@ -86,23 +85,12 @@ def create_app(config_name):
     _register_extensions(app)
     _register_blueprint(app)
 
-    # Init SQLAlchemy and create table and test data
-    if BaseConfig.ENV == 'testing':
-        try:
-            with app.app_context():
-                db.init_app(app)
-                migrate.init_app(app, db)
-                create_db()
-                db.create_all()
-                create_test_data()
-        except Exception as e:
-            print(str(e))
-            pass
-    else:
-        # 初始化SQLAlchemy
-        db.init_app(app)
-        migrate.init_app(app, db)
+    # 初始化SQLAlchemy
+    db.init_app(app)
+    migrate.init_app(app, db)
 
+    # init celery
+    init_celery(app, celery)
     # 非调试模式下执行
     if not app.debug:
         # 初始化日志处理
