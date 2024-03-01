@@ -10,12 +10,12 @@ from .common import api_common_bp
 # ------------------------------
 
 # 允许访问的API版本
-VERSIONS_ALLOWED = ['api_v1', 'api_v2', 'api_common']
+VERSIONS_ALLOWED = ['v1', 'v2', 'api_common']
 
 # API版本映射
 API_VERSION_MAPPING = {
-    'api_v1': api_v1_bp,
-    'api_v2': api_v2_bp,
+    'v1': api_v1_bp,
+    'v2': api_v2_bp,
     'api_common': api_common_bp
 }
 
