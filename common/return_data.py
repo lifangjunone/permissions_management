@@ -40,7 +40,7 @@ class Success(ReturnData):
             data: return json data
         """
         super().__init__(data)
-        self._msg = msg if msg else "Successful"
+        self._msg = msg if msg else "请求成功"
         self._code = 10000
 
 
@@ -56,24 +56,8 @@ class Unsuccessfully(ReturnData):
             data: return json data
         """
         super().__init__(data)
-        self._msg = msg if msg else "Unsuccessfully"
-        self._code = 10004
-
-
-class UnsuccessfullyFileExist(ReturnData):
-    """
-    success return data
-    """
-
-    def __init__(self, data, msg=None):
-        """
-        Init success params
-        Args:
-            data: return json data
-        """
-        super().__init__(data)
-        self._msg = msg if msg else "Unsuccessfully"
-        self._code = 10101
+        self._msg = msg if msg else "请求失败"
+        self._code = 10002
 
 
 class ParamError(ReturnData):
@@ -88,8 +72,8 @@ class ParamError(ReturnData):
             data: return json data
         """
         super().__init__(data)
-        self._msg = msg if msg else "Param is error"
-        self._code = 10001
+        self._msg = msg if msg else "参数错误"
+        self._code = 10003
 
 
 class ParamMissing(ReturnData):
@@ -104,8 +88,8 @@ class ParamMissing(ReturnData):
             data:
         """
         super().__init__(data)
-        self._msg = msg if msg else "Param is missing"
-        self._code = 10002
+        self._msg = msg if msg else "参数缺失"
+        self._code = 10004
 
 
 class DataMissing(ReturnData):
@@ -120,8 +104,8 @@ class DataMissing(ReturnData):
             data:
         """
         super().__init__(data)
-        self._msg = msg if msg else "data is missing"
-        self._code = 10003
+        self._msg = msg if msg else "没有查询到对应资源"
+        self._code = 10005
 
 
 class TokenInvalid(ReturnData):
@@ -136,8 +120,8 @@ class TokenInvalid(ReturnData):
             data:
         """
         super().__init__(data)
-        self._msg = msg if msg else "TInvalid token"
-        self._code = 10005
+        self._msg = msg if msg else "token无效"
+        self._code = 10006
 
 
 class PowerError(ReturnData):
@@ -152,8 +136,8 @@ class PowerError(ReturnData):
             data:
         """
         super().__init__(data)
-        self._msg = msg if msg else "Power error"
-        self._code = 10006
+        self._msg = msg if msg else "权限错误"
+        self._code = 10007
 
 
 class TopNumError(ReturnData):
@@ -168,8 +152,8 @@ class TopNumError(ReturnData):
             data:
         """
         super().__init__(data)
-        self._msg = msg if msg else "TopNum error"
-        self._code = 10007
+        self._msg = msg if msg else "最大值错误"
+        self._code = 10008
 
 
 class ResourcesNotEnough(ReturnData):
@@ -184,23 +168,7 @@ class ResourcesNotEnough(ReturnData):
             data:
         """
         super().__init__(data)
-        self._msg = msg if msg else "resources not enough"
-        self._code = 10008
-
-
-class FirstLogin(ReturnData):
-    """
-    First login need to change password  首次登陆必须修改密码
-    """
-
-    def __init__(self, data, msg=None):
-        """
-        First login need to change password
-        Args:
-            data:
-        """
-        super().__init__(data)
-        self._msg = msg if msg else "首次登陆必须修改密码"
+        self._msg = msg if msg else "资源不足"
         self._code = 10009
 
 
@@ -220,19 +188,35 @@ class PasswordExpired(ReturnData):
         self._code = 10010
 
 
-class NearExpiration(ReturnData):
+class TokenExpired(ReturnData):
     """
-    More than 90 days password expired  超过90天密码过期
+    token expire
     """
 
     def __init__(self, data, msg=None):
         """
-        More than specify days password expired
+        token expire
         Args:
             data:
         """
         super().__init__(data)
-        self._msg = msg if msg else "密码已过期"
+        self._msg = msg if msg else "token已过期"
+        self._code = 10010
+
+
+class AuthorizationMissing(ReturnData):
+    """
+    Authorization was missing
+    """
+
+    def __init__(self, data, msg=None):
+        """
+        token expire
+        Args:
+            data:
+        """
+        super().__init__(data)
+        self._msg = msg if msg else "授权凭证缺失"
         self._code = 10011
 
 

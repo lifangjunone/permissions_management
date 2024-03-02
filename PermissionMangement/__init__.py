@@ -2,8 +2,9 @@
 # coding=utf-8
 
 import os
+import logging
+import mysql.connector
 from flask import Flask, request
-# from flask_consulate import Consul
 from flask_cors import CORS
 from flask_migrate import Migrate
 from werkzeug.utils import import_string
@@ -13,16 +14,32 @@ from common.extensions import db, main_app_create_engine, migrate, celery
 from conf.default import config, BaseConfig
 from conf import celeryconfig
 from .api import VERSIONS_ALLOWED, API_VERSION_MAPPING, APP_BLUEPRINTS
-from flask_jwt_extended import jwt_required, JWTManager, exceptions
-import logging
-from flask import jsonify
-import mysql.connector
-from werkzeug.exceptions import HTTPException
+from flask_jwt_extended import jwt_required, JWTManager
+from common.return_data import TokenExpired, TokenInvalid, AuthorizationMissing, get_return_data
+
 
 _logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 jwt = JWTManager(app)
+
+
+# token 过期回调【自定义返回值】
+@jwt.expired_token_loader
+def expired_token_callback(header, payload):
+    return get_return_data(TokenExpired, {})
+
+
+# token 无效回调【自定义返回值】
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return get_return_data(TokenInvalid, {})
+
+
+@jwt.unauthorized_loader
+def unauthorized_loader_callback(error):
+    return get_return_data(AuthorizationMissing, {})
+
 
 
 def create_test_data():

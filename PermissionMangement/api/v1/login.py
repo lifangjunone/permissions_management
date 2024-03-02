@@ -11,7 +11,7 @@ class LoginViewSet(Resource):
     Login View Class
     """
     def post(self):
-        data = json.loads(request.get_data().decode('utf-8'))
+        data = request.get_json()
         username = data.get('username')
         password = data.get('password')
         if username == "admin" and password == "123456":
