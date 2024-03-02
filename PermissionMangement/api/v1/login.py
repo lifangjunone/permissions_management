@@ -1,8 +1,7 @@
 import logging
 from flask_restful import Resource, request
 from common.return_data import get_return_data, Success, Unsuccessfully
-from PermissionMangement.models import User
-from PermissionMangement.schemas import UserSchema
+from flask_jwt_extended import create_access_token
 import json
 _logger = logging.getLogger(__name__)
 
@@ -16,12 +15,9 @@ class LoginViewSet(Resource):
         username = data.get('username')
         password = data.get('password')
         if username == "admin" and password == "123456":
-            users = [
-                {"name": "admin", "email": "admin.qq.com"},
-                {"name": "god", "email": "god.qq.com"},
-                {"name": "girl", "email": "girl.qq.com"},
-                {"name": "boy", "email": "boy.qq.com"},
-            ]
-            return get_return_data(Success, users)
+            data = {
+                "token": create_access_token(identity=username)
+            }
+            return get_return_data(Success, data)
         else:
             return get_return_data(Unsuccessfully, {}, msg="账号或者密码错误")

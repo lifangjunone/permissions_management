@@ -1,5 +1,5 @@
 FLASK_APP=manage
-FLASK_ENV=production
+FLASK_ENV=development
 FLASK_DEBUG=True
 FLASK_RUN_PORT=8000
 FLASK_RUN_HOST=0.0.0.0

@@ -2,29 +2,27 @@
 # coding=utf-8
 
 import os
-from flask import Flask
+from flask import Flask, request
 # from flask_consulate import Consul
 from flask_cors import CORS
 from flask_migrate import Migrate
 from werkzeug.utils import import_string
 
 from common.log_handler import LogHandler
-from common.utils import get_ip_address
 from common.extensions import db, main_app_create_engine, migrate, celery
 from conf.default import config, BaseConfig
 from conf import celeryconfig
 from .api import VERSIONS_ALLOWED, API_VERSION_MAPPING, APP_BLUEPRINTS
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, JWTManager, exceptions
 import logging
-from datetime import datetime
+from flask import jsonify
 import mysql.connector
+from werkzeug.exceptions import HTTPException
 
 _logger = logging.getLogger(__name__)
 
-app_ = Flask(__name__)
-
-TOKEN_ERROR_INFO = ['Signature verification failed', 'Invalid crypto padding', 'Token has expired',
-                    'Missing Authorization Header']
+app = Flask(__name__)
+jwt = JWTManager(app)
 
 
 def create_test_data():
@@ -78,7 +76,6 @@ def create_app():
     :return: flask_app
     """
     config_name = os.getenv('ENVIRONMENT', BaseConfig.ENV)
-    app = Flask(__name__)
     app.config.from_object(config[config_name])
 
     _create_need_dir()
@@ -95,7 +92,6 @@ def create_app():
     if not app.debug:
         # 初始化日志处理
         LogHandler(app)
-        _register_service_to_consul(app)
     return app
 
 
@@ -104,27 +100,22 @@ def _verify_token():
     pass
 
 
-@app_.before_request
+@app.before_request
 def before_request():
     """
     这个钩子会在每次客户端访问视图的时候执行
     # 可以在请求之前进行用户的身份识别，以及对于本次访问的用户权限等进行判断。..
     """
-    # print("----before_request----")
-    # Session.expire()
-    # db.session.expire_all()
-    # from urllib.parse import urlparse
-    # path_list = urlparse(request.base_url).path.split('/')
-    # if 'login' in request.base_url:
-    #     pass
-    # elif 'version' in request.base_url:
-    #     pass
-    # else:
-    #     _verify_token()
-    pass
+    print("----before_request----")
+    if 'login' in request.base_url:
+        pass
+    elif 'version' in request.base_url:
+        pass
+    else:
+        _verify_token()
 
 
-@app_.after_request
+@app.after_request
 def after_request(response):
     """
     请求返回之前做一些事
@@ -179,44 +170,3 @@ def _register_blueprint(app):
     for bp_name in APP_BLUEPRINTS:
         bp = import_string(bp_name)
         app.register_blueprint(bp)
-
-
-def _register_service_to_consul(app):
-    """将服务注册到Consul服务
-
-    :param app: app_context
-    :return: None
-    """
-    """
-    host_ip = get_ip_address(app.config['HOST_ADAPTER'])
-    consul = Consul(
-        app=app,
-        consul_host=app.config['CONSUL_SERVER_HOST'],
-        consul_port=app.config['CONSUL_SERVER_PORT']
-    )
-    consul.apply_remote_config(
-        namespace=app.config['CONSUL_NAMESPACE'])
-    consul.register_service(
-        address=host_ip,
-        name=app.config['SERVICE_NAME'],
-        interval=app.config['CONSUL_REGISTER_INTERVAL'],
-        tags=app.config['CONSUL_REGISTER_TAGS'],
-        port=app.config['SERVER_PORT'],
-        httpcheck='http://{host}:{port}/healthcheck'.format(
-            host=host_ip, port=app.config['SERVER_PORT'])
-    )
-    """
-
-
-def init_celery(app, celery):
-    celery.conf.update(app.config)
-    TaskBase = celery.Task
-
-    class ContextTask(TaskBase):
-        abstract = True
-
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return TaskBase.__call__(self, *args, **kwargs)
-
-    celery.Task = ContextTask
