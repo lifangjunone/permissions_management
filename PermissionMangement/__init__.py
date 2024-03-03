@@ -41,7 +41,6 @@ def unauthorized_loader_callback(error):
     return get_return_data(AuthorizationMissing, {})
 
 
-
 def create_test_data():
     """
     insert test data
